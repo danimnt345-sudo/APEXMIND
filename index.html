@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ApexMind Inmobiliaria - App</title>
+    <!-- Frameworks y Fuentes -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #111418;
+            --gold-accent: #C5A059;
+            --gold-hover: #B08C4A;
+            --bg-light: #F8F9FA;
+            --text-main: #1A202C;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); color: var(--text-main); margin: 0; }
+        
+        /* Estilos Globales de Navegación */
+        .navbar-custom { background-color: var(--bg-dark); border-bottom: 1px solid rgba(197, 160, 89, 0.2); }
+        .nav-link-btn { color: #E2E8F0; font-weight: 300; cursor: pointer; text-decoration: none; padding: 0.5rem 1rem; border: none; background: none; }
+        .nav-link-btn:hover, .nav-link-btn.active { color: var(--gold-accent) !important; }
+        .btn-gold { background-color: var(--gold-accent); color: #fff; border-radius: 8px; font-weight: 500; transition: background-color 0.2s; border: none; }
+        .btn-gold:hover { background-color: var(--gold-hover); color: #fff; }
+        
+        /* Hero y Búsqueda */
+        .hero-section {
+            background: linear-gradient(rgba(17, 20, 24, 0.7), rgba(17, 20, 24, 0.8)), url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+            padding: 80px 0 120px 0; color: white;
+        }
+        .search-box-container { margin-top: -50px; position: relative; z-index: 10; }
+        .search-card { background: #ffffff; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 25px; border: 1px solid #E2E8F0; }
+        
+        /* Tarjetas de Propiedades */
+        .property-card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #E2E8F0; transition: transform 0.2s; height: 100%; }
+        .property-card:hover { transform: translateY(-4px); }
+        .property-img-wrapper { position: relative; height: 200px; overflow: hidden; }
+        .property-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .badge-status { position: absolute; top: 12px; left: 12px; padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; background-color: var(--gold-accent); color: white; }
+        
+        /* Sección de Auth */
+        .auth-container { background-color: var(--bg-dark); min-height: 85vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-card { background: #1a1f26; border-radius: 12px; border: 1px solid rgba(197, 160, 89, 0.2); padding: 35px; width: 100%; max-width: 420px; }
+        .form-control-dark { background-color: #111418; border: 1px solid #2d3748; color: #fff; }
+        .form-control-dark:focus { background-color: #111418; border-color: var(--gold-accent); color: #fff; box-shadow: none; }
+        .nav-pills-auth .nav-link { color: #A0AEC0; border-radius: 6px; font-size: 0.9rem; }
+        .nav-pills-auth .nav-link.active { background-color: var(--gold-accent); color: #fff; }
+
+        /* Dashboard Styles */
+        .sidebar { background-color: var(--bg-dark); min-height: 80vh; color: white; padding: 20px; border-radius: 12px; }
+        .stat-card { background: white; border-radius: 12px; border: 1px solid #E2E8F0; padding: 20px; }
+        
+        /* Control de Visibilidad de Secciones */
+        .vista-app { display: none; }
+        .vista-app.activa { display: block; }
+
+        /* Estilos Galería Modal Detalle */
+        .galeria-img-main { width: 100%; height: 280px; object-fit: cover; border-radius: 8px; }
+        .thumb-img { width: 100%; height: 70px; object-fit: cover; border-radius: 6px; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; }
+        .thumb-img:hover, .thumb-img.activa { opacity: 1; border: 2px solid var(--gold-accent); }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR PRINCIPAL -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" style="cursor:pointer;" onclick="navegarA('inicio')">
+                <i class="bi bi-house-door-fill" style="color: var(--gold-accent); font-size: 1.6rem;"></i>
+                <div class="lh-1">
+                    <span class="fw-bold fs-5 text-white">APEXMIND</span><br>
+                    <small style="font-size: 0.65rem; color: var(--gold-accent); letter-spacing: 1px;">INMOBILIARIA</small>
+                </div>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-2">
+                    <li class="nav-item"><button class="nav-link-btn" onclick="navegarA('inicio')">Inicio</button></li>
+                    <li class="nav-item"><button class="nav-link-btn" onclick="navegarA('inicio'); document.getElementById('propiedades').scrollIntoView();">Catálogo</button></li>
+                    <li class="nav-item"><button class="nav-link-btn" onclick="navegarA('dashboard')">Panel Agente</button></li>
+                </ul>
+                <div class="d-flex align-items-center gap-2" id="contenedorBotonesNav"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 1. VISTA INICIO (CATÁLOGO PÚBLICO) -->
+    <section id="vista-inicio" class="vista-app activa">
+        <header class="hero-section">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-7">
+                        <h1 class="display-4 fw-bold mb-3">Encuentra el hogar <br><span style="color: var(--gold-accent);">de tus sueños</span></h1>
+                        <p class="lead fw-light text-light mb-4 opacity-75">Explora propiedades exclusivas en Silvania, Fusagasugá, Melgar, Anapoima y La Mesa.</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Filtros -->
+        <div class="container search-box-container">
+            <div class="search-card">
+                <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-search me-2 text-warning"></i>Filtrar propiedades</h5>
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted fw-semibold">Municipio</label>
+                        <select id="filtroMunicipio" class="form-select border-0 bg-light py-2">
+                            <option value="">Todos los municipios</option>
+                            <option value="Silvania">Silvania</option>
+                            <option value="Fusagasugá">Fusagasugá</option>
+                            <option value="Melgar">Melgar</option>
+                            <option value="Anapoima">Anapoima</option>
+                            <option value="La Mesa">La Mesa</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted fw-semibold">Tipo de inmueble</label>
+                        <select id="filtroTipo" class="form-select border-0 bg-light py-2">
+                            <option value="">Todos los tipos</option>
+                            <option value="Casa campestre">Casa campestre</option>
+                            <option value="Apartamento">Apartamento</option>
+                            <option value="Finca">Finca</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button onclick="filtrarPropiedades()" class="btn btn-gold w-100 py-2 fw-semibold">
+                            <i class="bi bi-funnel me-2"></i>Aplicar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Catálogo -->
+        <main class="container my-5" id="propiedades">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold text-dark m-0">Propiedades Disponibles</h3>
+                <span class="text-muted small" id="contadorResultados">Cargando...</span>
+            </div>
+            <div class="row g-4" id="contenedorPropiedades"></div>
+        </main>
+    </section>
+
+    <!-- 2. VISTA DE AUTENTICACIÓN (LOGIN Y REGISTRO) -->
+    <section id="vista-login" class="vista-app">
+        <div class="auth-container">
+            <div class="auth-card text-white">
+                <div class="text-center mb-4">
+                    <i class="bi bi-house-door-fill text-warning fs-1"></i>
+                    <h4 class="fw-bold mt-2">Plataforma APEXMIND</h4>
+                    <p class="text-muted small">Ingresa o regístrate para gestionar tus propiedades</p>
+                </div>
+
+                <ul class="nav nav-pills nav-fill nav-pills-auth bg-dark p-1 rounded-3 mb-4" id="authTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active py-2" id="tab-login" data-bs-toggle="pill" data-bs-target="#pane-login" type="button">Iniciar Sesión</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link py-2" id="tab-register" data-bs-toggle="pill" data-bs-target="#pane-register" type="button">Registrarse</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="authTabsContent">
+                    <div class="tab-pane fade show active" id="pane-login" role="tabpanel">
+                        <form onsubmit="ejecutarLogin(event)">
+                            <div class="mb-3">
+                                <label class="form-label small text-muted">Correo electrónico</label>
+                                <input type="email" id="loginEmail" class="form-control form-control-dark" value="daniel@apexmind.com" required>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label small text-muted">Contraseña</label>
+                                <input type="password" id="loginPass" class="form-control form-control-dark" value="123456" required>
+                            </div>
+                            <button type="submit" class="btn btn-gold w-100 py-2 mb-3">Ingresar al Sistema</button>
+                        </form>
+                    </div>
+
+                    <div class="tab-pane fade" id="pane-register" role="tabpanel">
+                        <form onsubmit="ejecutarRegistro(event)">
+                            <div class="mb-3">
+                                <label class="form-label small text-muted">Nombre completo</label>
+                                <input type="text" id="regNombre" class="form-control form-control-dark" placeholder="Ej: Daniel Montañez" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small text-muted">Correo electrónico</label>
+                                <input type="email" id="regEmail" class="form-control form-control-dark" placeholder="tu@correo.com" required>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label small text-muted">Contraseña</label>
+                                <input type="password" id="regPass" class="form-control form-control-dark" placeholder="******" required>
+                            </div>
+                            <button type="submit" class="btn btn-gold w-100 py-2 mb-3">Crear Cuenta Agente</button>
+                        </form>
+                    </div>
+                </div>
+
+                <button onclick="navegarA('inicio')" class="btn btn-link text-muted w-100 text-decoration-none small">Volver al sitio web</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. VISTA PANEL DE CONTROL (DASHBOARD) -->
+    <section id="vista-dashboard" class="vista-app">
+        <div class="container-fluid py-4">
+            <div class="row">
+                <div class="col-md-3 col-lg-2">
+                    <div class="sidebar">
+                        <h5 class="fw-bold text-white mb-4"><i class="bi bi-speedometer2 text-warning me-2"></i> Panel</h5>
+                        <button onclick="navegarA('inicio')" class="btn btn-outline-light btn-sm w-100 text-start mb-2"><i class="bi bi-globe me-2"></i> Ver Sitio Web</button>
+                        <button onclick="cerrarSesion()" class="btn btn-outline-danger btn-sm w-100 text-start mt-4"><i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión</button>
+                    </div>
+                </div>
+
+                <div class="col-md-9 col-lg-10 mt-3 mt-md-0">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h3 class="fw-bold text-dark mb-0">Panel de Control</h3>
+                            <p class="text-muted small mb-0" id="textoAgenteActivo">Agente activo: Daniel Montañez</p>
+                        </div>
+                        <button class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#modalNuevaPropiedad">
+                            <i class="bi bi-plus-lg me-2"></i> Publicar Propiedad
+                        </button>
+                    </div>
+
+                    <!-- Estadísticas -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <span class="text-muted small fw-semibold">Propiedades Totales</span>
+                                <h3 id="statTotal" class="fw-bold text-dark mt-1 mb-0">0</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <span class="text-muted small fw-semibold">Visitas este mes</span>
+                                <h3 class="fw-bold text-dark mt-1 mb-0">1,480</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <span class="text-muted small fw-semibold">Leads por WhatsApp</span>
+                                <h3 class="fw-bold text-dark mt-1 mb-0 text-success">38</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de inmuebles -->
+                    <div class="card border-0 shadow-sm rounded-3">
+                        <div class="card-body">
+                            <h5 class="fw-bold mb-3">Inmuebles Activos</h5>
+                            <div class="table-responsive">
+                                <table class="table align-middle">
+                                    <thead class="table-light small text-muted">
+                                        <tr>
+                                            <th>Título</th>
+                                            <th>Municipio</th>
+                                            <th>Tipo</th>
+                                            <th>Precio</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaDashboard" class="small"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL DE DETALLE DE PROPIEDAD CON GALERÍA -->
+    <div class="modal fade" id="modalDetallePropiedad" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold modal-title" id="detalleTitulo">Título del inmueble</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-lg-7">
+                            <img id="imgPrincipalDetalle" src="" class="galeria-img-main mb-2 shadow-sm" alt="Foto Inmueble">
+                            <div class="row g-2" id="contenedorMiniaturas"></div>
+                        </div>
+                        <div class="col-lg-5 d-flex flex-column justify-content-between">
+                            <div>
+                                <span class="badge bg-warning text-dark mb-2" id="detalleBadge">Destacada</span>
+                                <h3 class="fw-bold text-dark mb-1" id="detallePrecio">$0 COP</h3>
+                                <p class="text-muted small mb-3"><i class="bi bi-geo-alt me-1"></i><span id="detalleUbicacion">Ubicación</span></p>
+                                
+                                <div class="d-flex gap-3 my-3 p-2 bg-light rounded text-center">
+                                    <div class="col"><small class="text-muted d-block">Habitaciones</small><strong id="detalleHab">0</strong></div>
+                                    <div class="col border-start"><small class="text-muted d-block">Área</small><strong id="detalleArea">0 m²</strong></div>
+                                    <div class="col border-start"><small class="text-muted d-block">Tipo</small><strong id="detalleTipo">N/A</strong></div>
+                                </div>
+                                <p class="small text-secondary" id="detalleDescripcion">
+                                    Excelente propiedad ubicada en una de las mejores zonas de la región. Cuenta con acabados modernos, amplios espacios naturales y excelente acceso vial.
+                                </p>
+                            </div>
+                            <div>
+                                <a id="btnWhatsappContact" href="#" target="_blank" class="btn btn-success w-100 py-2 fw-semibold">
+                                    <i class="bi bi-whatsapp me-2"></i>Contactar por WhatsApp
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRO DE INMUEBLE (CON SUBIDA DE FOTOS MULTIMEDIA) -->
+    <div class="modal fade" id="modalNuevaPropiedad" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="fw-bold modal-title">Registrar Nuevo Inmueble</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="guardarNuevoInmueble(event)">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Título</label>
+                            <input type="text" id="addTitulo" class="form-control" placeholder="Ej: Finca Campestre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Municipio</label>
+                            <select id="addMunicipio" class="form-select">
+                                <option value="Silvania">Silvania</option>
+                                <option value="Fusagasugá">Fusagasugá</option>
+                                <option value="Melgar">Melgar</option>
+                                <option value="Anapoima">Anapoima</option>
+                                <option value="La Mesa">La Mesa</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Tipo</label>
+                            <select id="addTipo" class="form-select">
+                                <option value="Casa campestre">Casa campestre</option>
+                                <option value="Apartamento">Apartamento</option>
+                                <option value="Finca">Finca</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Precio</label>
+                            <input type="text" id="addPrecio" class="form-control" placeholder="$850.000.000 COP" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <input type="number" id="addHab" class="form-control" placeholder="Habitaciones" required>
+                            </div>
+                            <div class="col-6">
+                                <input type="text" id="addArea" class="form-control" placeholder="Ej: 250 m²" required>
+                            </div>
+                        </div>
+
+                        <!-- CAMPO DE ARCHIVOS MULTIPLE PARA SUBIR FOTOS DESDE EL CELULAR/COMPUTADOR -->
+                        <div class="mb-4">
+                            <label class="form-label small fw-semibold"><i class="bi bi-images me-1 text-warning"></i> Cargar fotos del inmueble</label>
+                            <input type="file" id="addFotosInput" class="form-control" accept="image/*" multiple required>
+                            <div class="form-text small">Puedes seleccionar varias fotos desde tu galería a la vez.</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-gold w-100 py-2">Guardar y Publicar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-dark text-white py-4 mt-auto border-top border-secondary">
+        <div class="container text-center">
+            <p class="small text-muted mb-0">&copy; 2026 APEXMIND Group - Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const propiedadesBase = [
+            { 
+                id: 1, 
+                titulo: "Casa campestre moderna", 
+                municipio: "La Mesa", 
+                tipo: "Casa campestre", 
+                precio: "$850.000.000", 
+                hab: 4, 
+                area: "250 m²", 
+                img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80", 
+                fotos: [
+                    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80"
+                ],
+                badge: "Destacada" 
+            },
+            { 
+                id: 2, 
+                titulo: "Apartamento acogedor", 
+                municipio: "Fusagasugá", 
+                tipo: "Apartamento", 
+                precio: "$420.000.000", 
+                hab: 3, 
+                area: "120 m²", 
+                img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80", 
+                fotos: [
+                    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80"
+                ],
+                badge: "Nueva" 
+            },
+            { 
+                id: 3, 
+                titulo: "Casa campestre de lujo", 
+                municipio: "Anapoima", 
+                tipo: "Casa campestre", 
+                precio: "$1.250.000.000", 
+                hab: 5, 
+                area: "320 m²", 
+                img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80", 
+                fotos: [
+                    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?auto=format&fit=crop&w=800&q=80"
+                ],
+                badge: "Destacada" 
+            },
+            { 
+                id: 4, 
+                titulo: "Finca cafetera tradicional", 
+                municipio: "Silvania", 
+                tipo: "Finca", 
+                precio: "$980.000.000", 
+                hab: 6, 
+                area: "500 m²", 
+                img: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80", 
+                fotos: [
+                    "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80"
+                ],
+                badge: "Oportunidad" 
+            }
+        ];
+
+        const usuarioPredeterminado = { email: "daniel@apexmind.com", pass: "123456", nombre: "Daniel Montañez" };
+
+        function navegarA(vista) {
+            document.querySelectorAll('.vista-app').forEach(el => el.classList.remove('activa'));
+            
+            if (vista === 'dashboard') {
+                let sesion = localStorage.getItem('sesionActiva');
+                if (!sesion) {
+                    navegarA('login');
+                    return;
+                }
+                const user = JSON.parse(sesion);
+                document.getElementById('textoAgenteActivo').innerText = `Agente activo: ${user.nombre}`;
+                renderizarDashboard();
+            }
+
+            document.getElementById(`vista-${vista}`).classList.add('activa');
+            window.scrollTo(0,0);
+        }
+
+        function actualizarMenuNavbar() {
+            const contenedor = document.getElementById('contenedorBotonesNav');
+            const sesion = localStorage.getItem('sesionActiva');
+
+            if (sesion) {
+                const user = JSON.parse(sesion);
+                contenedor.innerHTML = `
+                    <span class="text-white small me-2"><i class="bi bi-person-circle text-warning me-1"></i>${user.nombre}</span>
+                    <button onclick="navegarA('dashboard')" class="btn btn-gold btn-sm px-3">Panel Agente</button>
+                    <button onclick="cerrarSesion()" class="btn btn-outline-light btn-sm px-2"><i class="bi bi-box-arrow-right"></i></button>
+                `;
+            } else {
+                contenedor.innerHTML = `
+                    <button onclick="mostrarFormAuth('login')" class="btn btn-outline-light btn-sm px-3">Iniciar sesión</button>
+                    <button onclick="mostrarFormAuth('register')" class="btn btn-gold btn-sm px-3">Registrarse</button>
+                `;
+            }
+        }
+
+        function mostrarFormAuth(tipo) {
+            navegarA('login');
+            if (tipo === 'register') {
+                const triggerEl = document.querySelector('#tab-register');
+                bootstrap.Tab.getInstance(triggerEl) ? bootstrap.Tab.getInstance(triggerEl).show() : new bootstrap.Tab(triggerEl).show();
+            } else {
+                const triggerEl = document.querySelector('#tab-login');
+                bootstrap.Tab.getInstance(triggerEl) ? bootstrap.Tab.getInstance(triggerEl).show() : new bootstrap.Tab(triggerEl).show();
+            }
+        }
+
+        function obtenerUsuariosGuardados() {
+            const usuarios = JSON.parse(localStorage.getItem('usuariosApex')) || [];
+            if (usuarios.length === 0) {
+                usuarios.push(usuarioPredeterminado);
+                localStorage.setItem('usuariosApex', JSON.stringify(usuarios));
+            }
+            return usuarios;
+        }
+
+        function ejecutarLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            const usuarios = obtenerUsuariosGuardados();
+
+            const encontrado = usuarios.find(u => u.email === email && u.pass === pass);
+
+            if (encontrado) {
+                localStorage.setItem('sesionActiva', JSON.stringify({ email: encontrado.email, nombre: encontrado.nombre }));
+                actualizarMenuNavbar();
+                navegarA('dashboard');
+            } else {
+                alert('Correo o contraseña incorrectos.');
+            }
+        }
+
+        function ejecutarRegistro(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('regNombre').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const pass = document.getElementById('regPass').value.trim();
+
+            let usuarios = obtenerUsuariosGuardados();
+
+            if (usuarios.some(u => u.email === email)) {
+                alert('Este correo electrónico ya se encuentra registrado.');
+                return;
+            }
+
+            const nuevoUsuario = { email, pass, nombre };
+            usuarios.push(nuevoUsuario);
+            localStorage.setItem('usuariosApex', JSON.stringify(usuarios));
+
+            localStorage.setItem('sesionActiva', JSON.stringify({ email, nombre }));
+            alert(`¡Registro exitoso! Bienvenido, ${nombre}.`);
+            
+            actualizarMenuNavbar();
+            navegarA('dashboard');
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('sesionActiva');
+            actualizarMenuNavbar();
+            navegarA('inicio');
+        }
+
+        function obtenerTodasPropiedades() {
+            const guardadas = JSON.parse(localStorage.getItem('propiedadesApex')) || [];
+            return [...propiedadesBase, ...guardadas];
+        }
+
+        function renderizarCatalogo(lista) {
+            const contenedor = document.getElementById('contenedorPropiedades');
+            document.getElementById('contadorResultados').innerText = `Mostrando ${lista.length} inmuebles`;
+            contenedor.innerHTML = '';
+
+            lista.forEach(p => {
+                contenedor.innerHTML += `
+                    <div class="col-md-4">
+                        <div class="property-card">
+                            <div class="property-img-wrapper">
+                                <span class="badge-status">${p.badge || 'Disponible'}</span>
+                                <img src="${p.img}" alt="${p.titulo}">
+                            </div>
+                            <div class="p-3">
+                                <h5 class="fw-bold text-dark mb-1">${p.precio}</h5>
+                                <p class="text-dark fw-medium mb-1 small">${p.titulo}</p>
+                                <p class="text-muted small mb-3"><i class="bi bi-geo-alt me-1"></i>${p.municipio}, Cundinamarca</p>
+                                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                    <span class="text-muted small"><i class="bi bi-door-open me-1"></i>${p.hab} hab | ${p.area}</span>
+                                    <button onclick="abrirDetalle(${p.id})" class="btn btn-outline-dark btn-sm">Ver Detalle</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function abrirDetalle(id) {
+            const todas = obtenerTodasPropiedades();
+            const p = todas.find(item => item.id === id);
+
+            if (!p) return;
+
+            document.getElementById('detalleTitulo').innerText = p.titulo;
+            document.getElementById('detallePrecio').innerText = p.precio;
+            document.getElementById('detalleUbicacion').innerText = `${p.municipio}, Cundinamarca`;
+            document.getElementById('detalleHab').innerText = p.hab;
+            document.getElementById('detalleArea').innerText = p.area;
+            document.getElementById('detalleTipo').innerText = p.tipo;
+            document.getElementById('detalleBadge').innerText = p.badge || 'Disponible';
+
+            const galeria = p.fotos && p.fotos.length > 0 ? p.fotos : [p.img];
+            const imgMain = document.getElementById('imgPrincipalDetalle');
+            imgMain.src = galeria[0];
+
+            const contenedorThumbs = document.getElementById('contenedorMiniaturas');
+            contenedorThumbs.innerHTML = '';
+
+            galeria.forEach((fotoUrl, index) => {
+                contenedorThumbs.innerHTML += `
+                    <div class="col-4">
+                        <img src="${fotoUrl}" class="thumb-img ${index === 0 ? 'activa' : ''}" onclick="cambiarFotoPrincipal('${fotoUrl}', this)">
+                    </div>
+                `;
+            });
+
+            // Conectado con tu número celular de WhatsApp
+            const msg = encodeURIComponent(`Hola, estoy interesado en la propiedad: ${p.titulo} en ${p.municipio} por ${p.precio}.`);
+            document.getElementById('btnWhatsappContact').href = `https://wa.me/573015512964?text=${msg}`;
+
+            const modal = new bootstrap.Modal(document.getElementById('modalDetallePropiedad'));
+            modal.show();
+        }
+
+        function cambiarFotoPrincipal(url, el) {
+            document.getElementById('imgPrincipalDetalle').src = url;
+            document.querySelectorAll('.thumb-img').forEach(t => t.classList.remove('activa'));
+            el.classList.add('activa');
+        }
+
+        function filtrarPropiedades() {
+            const muni = document.getElementById('filtroMunicipio').value;
+            const tipo = document.getElementById('filtroTipo').value;
+            const todas = obtenerTodasPropiedades();
+
+            const filtradas = todas.filter(p => {
+                let matchMuni = muni === "" || p.municipio === muni;
+                let matchTipo = tipo === "" || p.tipo === tipo;
+                return matchMuni && matchTipo;
+            });
+
+            renderizarCatalogo(filtradas);
+        }
+
+        function renderizarDashboard() {
+            const todas = obtenerTodasPropiedades();
+            const tabla = document.getElementById('tablaDashboard');
+            document.getElementById('statTotal').innerText = todas.length;
+            tabla.innerHTML = '';
+
+            todas.forEach(p => {
+                tabla.innerHTML += `
+                    <tr>
+                        <td class="fw-semibold">${p.titulo}</td>
+                        <td>${p.municipio}</td>
+                        <td>${p.tipo}</td>
+                        <td>${p.precio}</td>
+                        <td><span class="badge bg-success">Activa</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Lógica de lectura de archivos locales tipo Base64
+        async function guardarNuevoInmueble(e) {
+            e.preventDefault();
+
+            const inputArchivos = document.getElementById('addFotosInput');
+            const archivos = Array.from(inputArchivos.files);
+
+            if (archivos.length === 0) {
+                alert("Por favor selecciona al menos una foto.");
+                return;
+            }
+
+            // Convertir imágenes a formato DataURL (Base64)
+            const promesasBase64 = archivos.map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => resolve(event.target.result);
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            const fotosConvertidas = await Promise.all(promesasBase64);
+
+            const nuevo = {
+                id: Date.now(),
+                titulo: document.getElementById('addTitulo').value,
+                municipio: document.getElementById('addMunicipio').value,
+                tipo: document.getElementById('addTipo').value,
+                precio: document.getElementById('addPrecio').value,
+                hab: document.getElementById('addHab').value,
+                area: document.getElementById('addArea').value,
+                img: fotosConvertidas[0], // Primera foto como portada
+                fotos: fotosConvertidas,  // Galería de fotos completa
+                badge: "Nuevo"
+            };
+
+            let guardadas = JSON.parse(localStorage.getItem('propiedadesApex')) || [];
+            guardadas.push(nuevo);
+            localStorage.setItem('propiedadesApex', JSON.stringify(guardadas));
+
+            // Limpiar formulario y cerrar modal
+            e.target.reset();
+            bootstrap.Modal.getInstance(document.getElementById('modalNuevaPropiedad')).hide();
+            
+            renderizarCatalogo(obtenerTodasPropiedades());
+            navegarA('dashboard');
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            obtenerUsuariosGuardados();
+            actualizarMenuNavbar();
+            renderizarCatalogo(obtenerTodasPropiedades());
+        });
+    </script>
+</body>
+</html>
